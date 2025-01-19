@@ -1,0 +1,75 @@
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c      written by the UFO converter
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+anoinputs 1 mdl_FS0
+
+anoinputs 2 mdl_FS1
+
+anoinputs 3 mdl_FM0
+
+anoinputs 4 mdl_FM1
+
+anoinputs 5 mdl_FM2
+
+anoinputs 6 mdl_FM3
+
+anoinputs 7 mdl_FM4
+
+anoinputs 8 mdl_FM5
+
+anoinputs 9 mdl_FM6
+
+anoinputs 10 mdl_FM7
+
+anoinputs 11 mdl_FT0
+
+anoinputs 12 mdl_FT1
+
+anoinputs 13 mdl_FT2
+
+anoinputs 14 mdl_FT3
+
+anoinputs 15 mdl_FT4
+
+anoinputs 16 mdl_FT5
+
+anoinputs 17 mdl_FT6
+
+anoinputs 18 mdl_FT7
+
+anoinputs 19 mdl_FT8
+
+anoinputs 20 mdl_FT9
+
+ckmblock 1 mdl_cabi
+
+sminputs 1 aEWM1
+
+sminputs 2 mdl_Gf
+
+sminputs 3 aS
+
+yukawa 5 mdl_ymb
+
+yukawa 6 mdl_ymt
+
+yukawa 15 mdl_ymtau
+
+mass 15 mdl_MTA
+
+mass 6 mdl_MT
+
+mass 5 mdl_MB
+
+mass 23 mdl_MZ
+
+mass 25 mdl_MH
+
+decay 6 mdl_WT
+
+decay 23 mdl_WZ
+
+decay 24 mdl_WW
+
+decay 25 mdl_WH
