@@ -1,87 +1,107 @@
 c/* ********************************************************* */
-c/*  Equivalent photon approximation structure function.   * */
-c/*     Improved Weizsaecker-Williams formula              * */
-c/*   V.M.Budnev et al., Phys.Rep. 15C (1975) 181          * */
+c/*  Equivalent Photon Approximation (EPA) Functions         * */
+c/*  Using Improved Weizsäcker-Williams Formula             * */
+c/*  Reference: V.M. Budnev et al., Phys.Rep. 15C (1975) 181 * */
 c/* ********************************************************* */
-c   provided by Tomasz Pierzchala - UCL
+c/*   Provided by Tomasz Pierzchala - UCL                   * */
+c/* ********************************************************* */
 
-      real*8 function epa_electron(x,q2max)
+      real*8 function epa_electron(x, q2max)
+      implicit none
       integer i
-      real*8 x,phi_f
-      real*8 xin
-      real*8 alpha
-      real*8 f, q2min,q2max
-      real*8 PI
-      data PI/3.14159265358979323846/
+      real*8 x, alpha, xin, q2min, PI, f
+      real*8 q2max
 
-      data xin/0.511d-3/ !electron mass in GeV
-
-      alpha = .0072992701
+      ! Constants
+      data PI /3.14159265358979323846/   ! Value of π
+      data xin /0.511d-3/                ! Electron mass in GeV
+      alpha = 0.0072992701               ! Fine-structure constant
 
 C     // x = omega/E = (E-E')/E
-      if (x.lt.1) then
-         q2min= xin*xin*x*x/(1-x)
-         if(q2min.lt.q2max) then 
-            f = alpha/2d0/PI*
-     &           (2d0*xin*xin*x*(-1/q2min+1/q2max)+
-     &           (2-2d0*x+x*x)/x*dlog(q2max/q2min))
-            
+      if (x < 1.d0) then
+         ! Compute minimum virtuality for the photon
+         q2min = xin * xin * x * x / (1.d0 - x)
+
+         ! Check if q2min < q2max, otherwise set flux to zero
+         if (q2min < q2max) then
+            f = alpha / (2.d0 * PI) * &
+     &          (2.d0 * xin * xin * x * (-1.d0 / q2min + 1.d0 / q2max) + &
+     &           (2.d0 - 2.d0 * x + x * x) / x * dlog(q2max / q2min))
          else
-           f = 0. 
+            f = 0.d0
          endif
       else
-         f= 0.
+         f = 0.d0
       endif
-c      write (*,*) x,dsqrt(q2min),dsqrt(q2max),f
-      if (f .lt. 0) f = 0
-      epa_electron= f
 
+C     Ensure the photon flux is non-negative
+      if (f < 0.d0) f = 0.d0
+      epa_electron = f
+
+      return
       end
 
-      real*8 function epa_proton(x,q2max)
+      real*8 function epa_proton(x, q2max)
+      implicit none
       integer i
-      real*8 x,phi_f
-      real*8 xin
-      real*8 alpha,qz
-      real*8 f, qmi,qma, q2max
-      real*8 PI
-      data PI/3.14159265358979323846/
+      real*8 x, alpha, xin, qz, qmi, PI, f
+      real*8 q2max
+      real*8 phi_f
 
-      data xin/0.938/ ! proton mass in GeV
+      ! Constants
+      data PI /3.14159265358979323846/   ! Value of π
+      data xin /0.938d0/                 ! Proton mass in GeV
+      alpha = 0.0072992701               ! Fine-structure constant
+      qz = 0.71                          ! Proton structure parameter (GeV^2)
 
-      alpha = .0072992701
-      qz = 0.71
-    
 C     // x = omega/E = (E-E')/E
-      if (x.lt.1) then
-         qmi= xin*xin*x*x/(1-x)
-         if(qmi.lt.q2max) then          
-            f = alpha/PI*(phi_f(x,q2max/qz)-phi_f(x,qmi/qz))*(1-x)/x
+      if (x < 1.d0) then
+         ! Compute minimum virtuality for the photon
+         qmi = xin * xin * x * x / (1.d0 - x)
+
+         ! Check if qmi < q2max, otherwise set flux to zero
+         if (qmi < q2max) then
+            f = alpha / PI * &
+     &          (phi_f(x, q2max / qz) - phi_f(x, qmi / qz)) * (1.d0 - x) / x
          else
-            f=0.
+            f = 0.d0
          endif
       else
-         f= 0.
+         f = 0.d0
       endif
-      if (f .lt. 0) f = 0
-      epa_proton= f
+
+C     Ensure the photon flux is non-negative
+      if (f < 0.d0) f = 0.d0
+      epa_proton = f
+
+      return
       end
 
-      real*8 function phi_f(x,qq)
-      real*8 x, qq
-      real*8 y,qq1,f
-      real*8 a,b,c
+      real*8 function phi_f(x, qq)
+      implicit none
+      real*8 x, qq, y, qq1, f
+      real*8 a, b, c
 
-       a = 7.16
-       b = -3.96
-       c = .028
+      ! Parameters for the proton structure function
+      a = 7.16
+      b = -3.96
+      c = 0.028
 
-      qq1=1+qq
-      y= x*x/(1-x)
-      f=(1+a*y)*(-log(qq1/qq)+1/qq1+1/(2*qq1*qq1)+1/(3*qq1*qq1*qq1))
-      f=f + (1-b)*y/(4*qq*qq1*qq1*qq1);
-      f=f+ c*(1+y/4)*(log((qq1-b)/qq1)+b/qq1+b*b/(2*qq1*qq1)+
-     $b*b*b/(3*qq1*qq1*qq1))
-      phi_f= f
+      ! Derived variables
+      qq1 = 1.d0 + qq
+      y = x * x / (1.d0 - x)
+
+      ! Compute the structure function φ_f(x, qq)
+      f = (1.d0 + a * y) * &
+     &    (-dlog(qq1 / qq) + 1.d0 / qq1 + 1.d0 / (2.d0 * qq1 * qq1) + &
+     &     1.d0 / (3.d0 * qq1 * qq1 * qq1))
+      f = f + (1.d0 - b) * y / (4.d0 * qq * qq1 * qq1 * qq1)
+      f = f + c * (1.d0 + y / 4.d0) * &
+     &    (dlog((qq1 - b) / qq1) + b / qq1 + &
+     &     b * b / (2.d0 * qq1 * qq1) + &
+     &     b * b * b / (3.d0 * qq1 * qq1 * qq1))
+
+      phi_f = f
+
+      return
       end
-  
